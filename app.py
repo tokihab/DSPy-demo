@@ -23,25 +23,25 @@ st.set_page_config(page_title="EV Grid Analytics", layout="wide")
 
 # --- SIDEBAR: PHYSICS CONTROLS ---
 with st.sidebar:
-    st.header("⚡ Grid Physics Simulator")
+    st.header("Grid Physics Simulator")
     st.write("Manipulate time to alter the SQL database dynamically.")
     
-    if st.button("⏱️ Advance 15 Mins (Normal)"):
+    if st.button("Advance 15 Mins (Normal)"):
         advance_time(scenario="normal")
         st.rerun()
         
-    if st.button("🚛 Trigger Fleet Arrival (Spike)"):
+    if st.button("Trigger Fleet Arrival (Spike)"):
         advance_time(scenario="fleet_arrival")
         st.rerun()
         
-    if st.button("❄️ Trigger Cooldown"):
+    if st.button("Trigger Cooldown"):
         advance_time(scenario="cooldown")
         st.rerun()
         
     st.divider()
     
     # DATABASE RESET BUTTON
-    if st.button("🗑️ Reset Database & Chat", type="primary"):
+    if st.button("Reset Database & Chat", type="primary"):
         reset_db()
         st.session_state.chat_history = [] # Clear agent memory
         st.rerun()
@@ -51,31 +51,35 @@ col1, col2 = st.columns([1, 1], gap="large")
 
 # PANE 1: Live Database View
 with col1:
-    st.subheader("📈 Transformer Temperature Trend")
+    st.subheader("Transformer Temperature Trend")
     conn = sqlite3.connect(DB_PATH)
     
-    # THE TEMPERATURE CHART
+    # 1. Constrain the chart height to 250 pixels
     df_chart = pd.read_sql("SELECT timestamp, transformer_temp_c FROM substation_telemetry ORDER BY timestamp ASC", conn)
     if not df_chart.empty:
         df_chart.set_index('timestamp', inplace=True)
-        st.line_chart(df_chart, y="transformer_temp_c", color="#ff4b4b")
+        st.line_chart(df_chart, y="transformer_temp_c", color="#ff4b4b", height=250)
     
-    st.subheader("📊 Live Substation Telemetry (Last 10 Ticks)")
+    st.subheader("Live Substation Telemetry (Last 10 Ticks)")
     df_telemetry = pd.read_sql("SELECT * FROM substation_telemetry ORDER BY timestamp DESC LIMIT 10", conn)
-    st.dataframe(df_telemetry, width="stretch")
     
-    st.subheader("🔌 Charger Status")
+    # 2. Constrain the table height to 200 pixels (makes it scrollable) and hide the index
+    st.dataframe(df_telemetry, width="stretch", height=200, hide_index=True)
+    
+    st.subheader("Charger Status")
     df_chargers = pd.read_sql("SELECT * FROM chargers", conn)
-    st.dataframe(df_chargers, width="stretch")
+    
+    # 3. Hide the index for a cleaner look
+    st.dataframe(df_chargers, width="stretch", hide_index=True)
     
     conn.close()
 
 # PANE 2: The Agent Chat
 with col2:
-    st.subheader("🤖 ReAct Investigator")
+    st.subheader("ReAct Investigator")
     
     # Create a fixed-height, scrollable container for the chat history
-    chat_container = st.container(height=650, border=False)
+    chat_container = st.container(border=False)
     
     # Render all past messages inside the container
     with chat_container:
@@ -84,7 +88,7 @@ with col2:
                 st.markdown(msg["content"])
                 
                 if msg["role"] == "assistant" and "trace" in msg:
-                    with st.expander("🔍 View DSPy SQL Trace"):
+                    with st.expander("View DSPy SQL Trace"):
                         for idx, (q, obs) in enumerate(zip(msg["trace"]["queries"], msg["trace"]["observations"]), 1):
                             st.code(f"-- Step {idx}\n{q}", language="sql")
                             st.caption(f"Observation: {obs}")
@@ -108,7 +112,7 @@ with col2:
                         
                     st.markdown(result["executive_brief"])
                     
-                    with st.expander("🔍 View DSPy SQL Trace"):
+                    with st.expander("View DSPy SQL Trace"):
                         for idx, (q, obs) in enumerate(zip(result["executed_queries"], result["db_observations"]), 1):
                             st.code(f"-- Step {idx}\n{q}", language="sql")
                             st.caption(f"Observation: {obs}")

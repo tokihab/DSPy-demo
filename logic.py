@@ -54,6 +54,13 @@ def react_node(state: AgentGraphState):
     schema = "Tables: 1. chargers(charger_id, max_kw, status) | 2. charging_sessions(session_id, charger_id, start_time, end_time, peak_kw) | 3. substation_telemetry(timestamp, total_load_kw, transformer_temp_c, grid_penalty_active)"
     
     agent = dspy.ReAct(IndustrialSQLAgent, tools=[execute_sql], max_iters=4)
+    
+    try:
+        # If you run optimize.py later, this will load your trained Egyptian dialect model
+        agent.load("egyptian_grid_agent.json")
+    except Exception:
+        pass
+        
     agent(question=state["question"], schema_context=schema)
     
     return {

@@ -38,19 +38,6 @@ def calculate_thermal_inertia(prev_temp: float, new_load_kw: float) -> float:
     
     return round(t_ambient + (prev_temp - t_ambient) * retention_factor + heat_generated, 2)
 
-def reset_db():
-    """Drops all tables and re-initializes the database from scratch."""
-    conn = sqlite3.connect(DB_PATH)
-    cursor = conn.cursor()
-    cursor.execute("DROP TABLE IF EXISTS chargers")
-    cursor.execute("DROP TABLE IF EXISTS charging_sessions")
-    cursor.execute("DROP TABLE IF EXISTS substation_telemetry")
-    conn.commit()
-    conn.close()
-    
-    # Re-seed the clean database
-    init_db()
-
 def advance_time(scenario="normal"):
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
@@ -76,3 +63,16 @@ def advance_time(scenario="normal"):
     
     conn.commit()
     conn.close()
+
+def reset_db():
+    """Drops all tables and re-initializes the database from scratch."""
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute("DROP TABLE IF EXISTS chargers")
+    cursor.execute("DROP TABLE IF EXISTS charging_sessions")
+    cursor.execute("DROP TABLE IF EXISTS substation_telemetry")
+    conn.commit()
+    conn.close()
+    
+    # Re-seed the clean database
+    init_db()

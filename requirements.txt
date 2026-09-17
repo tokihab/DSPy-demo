@@ -1,0 +1,5 @@
+streamlit==1.38.0
+pandas==2.2.2
+dspy-ai==2.4.13
+langgraph==0.2.14
+python-dotenv==1.0.1

@@ -78,7 +78,7 @@ with col2:
     st.subheader("🤖 ReAct Investigator")
     
     # 1. Create a fixed-height, scrollable container for the chat history
-    chat_container = st.container(height=650, border=False)
+    chat_container = st.container(border=False)
     
     # 2. Render all past messages inside the container
     with chat_container:

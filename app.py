@@ -75,7 +75,7 @@ with col1:
 
 # PANE 2: The Agent Chat
 with col2:
-    st.subheader("🤖 ReAct Investigator")
+    st.subheader("ReAct Investigator")
     
     # 1. Create a fixed-height, scrollable container for the chat history
     chat_container = st.container(border=False)
